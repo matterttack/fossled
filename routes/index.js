@@ -10,6 +10,7 @@ router.get('/', function(req, res, next) {
   res.sendFile(path.join(__dirname, '../public', 'index.html'));
 });
 
+/* GET Product Collections index */
 router.get('/api/v1/product_collections', function(req, res) {
 
     var results = [];
@@ -41,6 +42,7 @@ router.get('/api/v1/product_collections', function(req, res) {
 
 });
 
+/* GET Product Collection by ID */
 router.get('/api/v1/product_collections/:product_collection_id', function(req, res) {
 
     var results = [];
@@ -75,6 +77,7 @@ router.get('/api/v1/product_collections/:product_collection_id', function(req, r
 
 });
 
+/* GET trees */
 router.get('/api/v1/trees', function(req, res) {
 
     var results = [];
@@ -139,5 +142,33 @@ router.get('/api/v1/trees', function(req, res) {
     }
 
 });
+
+/**
+ * Set up send grid
+ */
+
+var sendgrid_username   = process.env.SENDGRID_USERNAME;
+var sendgrid_password   = process.env.SENDGRID_PASSWORD;
+
+var sendgrid   = require('sendgrid')(sendgrid_username, sendgrid_password);
+var email      = new sendgrid.Email({to: 'info@fossled.eu'});
+
+router.post('/email', function(req, res, next) {
+
+  email.from    = req.body.from
+  email.subject = req.body.subject
+  email.text    = req.body.text
+
+  sendgrid.send(email, function(err, json) {
+
+    if (err) {
+      return next(err);
+    }
+
+    return res.send(json);
+  });
+
+})
+
 
 module.exports = router;
