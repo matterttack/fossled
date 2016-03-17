@@ -127,6 +127,14 @@ router.get('/api/v1/trees', function(req, res) {
 
         env.subtree.forEach(function(cat) {
           var sub_cats = _.uniq(_.pluck(_.where(results, {environment: env.name, category: cat}), 'sub_category'));
+
+          // Sort them alphabetically
+          sub_cats.sort(function(a, b){
+              if(a < b) return -1;
+              if(a > b) return 1;
+              return 0;
+          })
+
           var sa = [];
           sub_cats.forEach(function(sub_cat) {
             var series = _.uniq(_.pluck(_.where(results, {environment: env.name, category: cat, sub_category: sub_cat}), 'series'));
