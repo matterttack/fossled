@@ -5,11 +5,6 @@ var pg = require('pg');
 var _ = require("underscore");
 var connectionString = process.env.DATABASE_URL || 'postgres://localhost/fossled_development';
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.sendFile(path.join(__dirname, '../public', 'index.html'));
-});
-
 /* GET Product Collections index */
 router.get('/api/v1/product_collections', function(req, res) {
 
@@ -163,6 +158,7 @@ var email      = new sendgrid.Email({to: 'info@fossled.eu'});
 
 router.post('/email', function(req, res, next) {
 
+  email.to      = req.body.to
   email.from    = req.body.from
   email.subject = req.body.subject
   email.text    = req.body.text
@@ -178,5 +174,9 @@ router.post('/email', function(req, res, next) {
 
 })
 
+/* GET all other routes to angular homepage */
+router.get('/*', function(req, res, next) {
+  res.sendFile(path.join(__dirname, '../public', 'index.html'));
+});
 
 module.exports = router;
