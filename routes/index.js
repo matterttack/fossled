@@ -72,6 +72,41 @@ router.get('/api/v1/product_collections/:product_collection_id', function(req, r
 
 });
 
+/* GET Product Light Sources by Nominal Code */
+router.get('/api/v1/product_light_source/:nominal_code', function(req,res) {
+
+  var results = [];
+
+  // Grab data from the URL parameters
+  var nominal_code = req.params.nominal_code;
+
+  // Get a Postgres client from the connection pool
+  pg.connect(connectionString, function(err, client, done) {
+    // Handle connection errors
+    if (err) {
+      done();
+      console.log(err);
+      return res.status(500).json({ success: false, data: err});
+    }
+
+    // SQL Query > Select Data
+    var query = client.query("SELECT * FROM product_light_sources WHERE nominal_code=($1)", [nominal_code]);
+
+    // Stream the results back one row at a time
+    query.on('row', function(row) {
+      results.push(row);
+    });
+
+    // After all data is returned close the connection and return results
+    query.on('end', function() {
+      done();
+      return res.json(results);
+    });
+
+  });
+
+});
+
 /* GET trees */
 router.get('/api/v1/trees', function(req, res) {
 
