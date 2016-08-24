@@ -213,6 +213,38 @@ router.get('/api/v1/trees', function(req, res) {
 
 });
 
+/* POST TO WARRANTY DATABASE ENDPOINT */
+router.post('/api/v1/warranty_application', function(req, res) {
+
+  // Grab data from http request
+  var data = req.body;
+      uniq_ref = 'this should change'
+
+  var results = [];
+
+    // Get a Postgres client from the connection pool
+    pg.connect(connectionString, function(err, client, done) {
+        // Handle connection errors
+        if(err) {
+          done();
+          console.log(err);
+          return res.status(500).json({ success: false, data: err});
+        }
+
+        // SQL Query > Insert Data
+          client.query("INSERT INTO warranty_applications(warranty_type, company_name, contact_name, project_address, country, email, phone, who_are_you, vendor_name, date_of_purchase, date_of_install, quantity, installer_company_name, product_code, batch_number, reference, created_at, updated_at) values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)", [data.warranty_type, data.company_name, data.contact_name, data.project_address, data.country, data.email, data.phone, data.who_are_you, data.vendor_name, data.date_of_purchase, data.date_of_install, data.quantity, data.installer_company_name, data.product_code, data.batch_number, uniq_ref, new Date(), new Date()], function(err, result) {
+            if(err) {
+              done();
+              console.log(err);
+              return res.status(400).json({success: false, data: err});
+            }
+
+            done();
+            return res.json({status: 200, data: result});
+          });
+    });
+});
+
 /**
  * Set up send grid
  */
@@ -223,6 +255,7 @@ var sendgrid_password   = process.env.SENDGRID_PASSWORD;
 var sendgrid   = require('sendgrid')(sendgrid_username, sendgrid_password);
 var email      = new sendgrid.Email({to: 'info@fossled.eu'});
 
+/* POST EMAILS ENDPOINT */
 router.post('/email', function(req, res, next) {
 
   email.to      = req.body.to
@@ -235,7 +268,6 @@ router.post('/email', function(req, res, next) {
     if (err) {
       return next(err);
     }
-
     return res.send(json);
   });
 

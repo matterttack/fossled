@@ -9,6 +9,14 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 
 var app = express();
+var bodyParser = require('body-parser')
+
+
+// Set up middle ware parsing for http requests
+app.use( bodyParser.json() );       // to support JSON-encoded bodies
+app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+  extended: true
+}));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
