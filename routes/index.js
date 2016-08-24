@@ -266,6 +266,7 @@ router.post('/email', function(req, res, next) {
   sendgrid.send(email, function(err, json) {
 
     if (err) {
+      console.log(err)
       return next(err);
     }
     return res.send(json);
