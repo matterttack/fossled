@@ -254,7 +254,7 @@ router.post('/api/v1/warranty_application', function(req, res) {
 
 /* POST EMAILS ENDPOINT */
 router.post('/email', function(req, res, next) {
-console.log(req);
+
 var helper = require('sendgrid').mail;
 
 var from_email = new helper.Email(req.body.from)
@@ -269,7 +269,7 @@ var request = sg.emptyRequest({
   path: '/v3/mail/send',
   body: mail.toJSON(),
 });
-console.log(request.body);
+
 
 sg.API(request, function(error, response) {
   console.log(response.statusCode);
