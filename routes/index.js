@@ -249,28 +249,38 @@ router.post('/api/v1/warranty_application', function(req, res) {
  * Set up send grid
  */
 
-var sendgrid_username   = process.env.SENDGRID_USERNAME;
-var sendgrid_password   = process.env.SENDGRID_PASSWORD;
-
-var sendgrid   = require('sendgrid')(sendgrid_username, sendgrid_password);
-var email      = new sendgrid.Email({to: 'info@fossled.eu'});
+// var sendgrid_username   = process.env.SENDGRID_USERNAME;
+// var sendgrid_password   = process.env.SENDGRID_PASSWORD;
 
 /* POST EMAILS ENDPOINT */
 router.post('/email', function(req, res, next) {
 
-  email.to      = req.body.to
-  email.from    = req.body.from
-  email.subject = req.body.subject
-  email.text    = req.body.text
+var helper = require('sendgrid').mail;
 
-  sendgrid.send(email, function(err, json) {
+var from_email = new helper.Email(req.body.from)
+var to_email = new helper.Email('info@fossled.eu')
+var subject = req.body.subject
+var content = new helper.Content('text/plain', req.body.text)
+var mail = new helper.Mail(from_email, subject, to_email, content)
 
-    if (err) {
-      console.log(err)
-      return next(err);
+var sg = require('sendgrid')(process.env.SENDGRID_API_KEY);
+var request = sg.emptyRequest({
+  method: 'POST',
+  path: '/v3/mail/send',
+  body: mail.toJSON(),
+});
+
+
+sg.API(request, function(error, response) {
+  // console.log(response.statusCode);
+  // console.log(response.body);
+  // console.log(response.headers);
+    if (error) {
+      console.log(error)
+      return next(error);
     }
-    return res.send(json);
-  });
+    return res.send(response);
+})
 
 })
 
