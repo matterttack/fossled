@@ -5,6 +5,24 @@ var pg = require('pg');
 var _ = require("underscore");
 var connectionString = process.env.DATABASE_URL || 'postgres://localhost/fossled_development';
 
+const testFolder = './public/img/product_images';
+const fs = require('fs');
+var images = [];
+
+// Makes an array of file names in the product_images folder
+// We later use this to append an array to product collection resources
+fs.readdir(testFolder, (err, files) => {
+  files.forEach(file => {
+    images.push(file);
+  });
+})
+
+function filterImages(query) {
+  return images.filter(function(el) {
+    return el.toLowerCase().indexOf(query.toLowerCase()) > -1;
+  })
+}
+
 /* GET Product Collections index */
 router.get('/api/v1/product_collections', function(req, res) {
 
@@ -24,6 +42,10 @@ router.get('/api/v1/product_collections', function(req, res) {
 
         // Stream results back one row at a time
         query.on('row', function(row) {
+          // Search through the images array and add any extra images found in the product_images folder which match the products nominal code
+            product_images = []
+            product_images = filterImages(row.nominal_code);
+            row['product_images'] = product_images
             results.push(row);
         });
 
@@ -59,6 +81,9 @@ router.get('/api/v1/product_collections/:product_collection_id', function(req, r
 
         // Stream results back one row at a time
         query.on('row', function(row) {
+            product_images = []
+            product_images = filterImages(row.nominal_code);
+            row['product_images'] = product_images
             results.push(row);
         });
 
