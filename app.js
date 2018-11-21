@@ -11,6 +11,13 @@ var routes = require('./routes/index');
 
 var app = express();
 
+var forceSsl = function (req, res, next) {
+  if (req.headers['x-forwarded-proto'] !== 'https') {
+      return res.redirect(['https://', req.get('Host'), req.url].join(''));
+  }
+  return next();
+};
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -33,6 +40,9 @@ app.use(function(req, res, next) {
   next(err);
 });
 
+if (app.get('env') === 'production') {
+    app.use(forceSsl);
+}
 
 // error handlers
 // development error handler

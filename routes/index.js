@@ -179,7 +179,7 @@ router.get('/api/v1/trees', function(req, res) {
         }
 
         // SQL Query > Select Data
-        var query = client.query("SELECT * FROM product_collections ORDER BY id ASC;");
+        var query = client.query("SELECT * FROM product_collections ORDER BY order_rank ASC;");
 
         // Stream results back one row at a time
         query.on('row', function(row) {
