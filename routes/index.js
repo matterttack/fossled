@@ -17,9 +17,15 @@ fs.readdir(testFolder, (err, files) => {
   });
 })
 
+// Filter which take a query and returns true for a string which contains that query followed by a non 
 function filterImages(query) {
-  return images.filter(function(el) {
-    return el.toLowerCase().indexOf(query.toLowerCase()) > -1;
+  regEx = `${query}(\\W+)`
+
+  return images.filter(function(string, index) {
+    var pattern = new RegExp(regEx, "g");
+    if(string.match(pattern)) {
+      return true
+    }
   })
 }
 
