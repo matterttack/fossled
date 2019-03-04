@@ -4,12 +4,16 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var sslRedirect = require('heroku-ssl-redirect');
 
 require('dotenv').config(); // Load environment variables from .env into ENV (process.env).
 
 var routes = require('./routes/index');
 
 var app = express();
+
+// enable ssl redirect
+app.use(sslRedirect());
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

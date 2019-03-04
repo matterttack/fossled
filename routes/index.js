@@ -5,6 +5,30 @@ var pg = require('pg');
 var _ = require("underscore");
 var connectionString = process.env.DATABASE_URL || 'postgres://localhost/fossled_development';
 
+const testFolder = './public/img/product_images';
+const fs = require('fs');
+var images = [];
+
+// Makes an array of file names in the product_images folder
+// We later use this to append an array to product collection resources
+fs.readdir(testFolder, (err, files) => {
+  files.forEach(file => {
+    images.push(file);
+  });
+})
+
+// Filter which take a query and returns true for a string which contains that query followed by a non 
+function filterImages(query) {
+  regEx = `${query}(\\W+)`
+
+  return images.filter(function(string, index) {
+    var pattern = new RegExp(regEx, "g");
+    if(string.match(pattern)) {
+      return true
+    }
+  })
+}
+
 /* GET Product Collections index */
 router.get('/api/v1/product_collections', function(req, res) {
 
@@ -24,6 +48,10 @@ router.get('/api/v1/product_collections', function(req, res) {
 
         // Stream results back one row at a time
         query.on('row', function(row) {
+          // Search through the images array and add any extra images found in the product_images folder which match the products nominal code
+            product_images = []
+            product_images = filterImages(row.nominal_code);
+            row['product_images'] = product_images
             results.push(row);
         });
 
@@ -59,6 +87,9 @@ router.get('/api/v1/product_collections/:product_collection_id', function(req, r
 
         // Stream results back one row at a time
         query.on('row', function(row) {
+            product_images = []
+            product_images = filterImages(row.nominal_code);
+            row['product_images'] = product_images
             results.push(row);
         });
 
@@ -154,7 +185,7 @@ router.get('/api/v1/trees', function(req, res) {
         }
 
         // SQL Query > Select Data
-        var query = client.query("SELECT * FROM product_collections ORDER BY id ASC;");
+        var query = client.query("SELECT * FROM product_collections ORDER BY order_rank ASC;");
 
         // Stream results back one row at a time
         query.on('row', function(row) {
@@ -191,11 +222,11 @@ router.get('/api/v1/trees', function(req, res) {
           var sub_cats = _.uniq(_.pluck(_.where(results, {environment: env.name, category: cat}), 'sub_category'));
 
           // Sort them alphabetically
-          sub_cats.sort(function(a, b){
-              if(a < b) return -1;
-              if(a > b) return 1;
-              return 0;
-          })
+          // sub_cats.sort(function(a, b){
+          //     if(a < b) return -1;
+          //     if(a > b) return 1;
+          //     return 0;
+          // })
 
           var sa = [];
           sub_cats.forEach(function(sub_cat) {
