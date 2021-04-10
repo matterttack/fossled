@@ -172,7 +172,9 @@ router.get('/api/v1/product_light_source/:nominal_code', function(req,res) {
 
 /* GET trees */
 router.get('/api/v1/trees', function(req, res) {
-
+  
+  console.log('api route called');
+  
     var results = [];
 
     // Get a Postgres client from the connection pool
