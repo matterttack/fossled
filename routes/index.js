@@ -182,7 +182,7 @@ router.get('/api/v1/trees', function(req, res) {
     pg.connect(connectionString, function(err, client, done) {
         // Handle connection errors
         if(err) {
-          console.log('connection error encountered')
+          console.log('connection error encountered');
           done();
           console.log(err);
           return res.status(500).json({ success: false, data: err});
@@ -191,15 +191,19 @@ router.get('/api/v1/trees', function(req, res) {
         // SQL Query > Select Data
         var query = client.query("SELECT * FROM product_collections ORDER BY order_rank ASC;");
       
-      console.log(query)
+      console.log(query);
       
         // Stream results back one row at a time
         query.on('row', function(row) {
+          console.log('streaming results');
+          console.log(row);
             results.push(row);
         });
 
         // After all data is returned, close connection and return results
         query.on('end', function() {
+          console.log('all data received');
+          console.log(results);
             done();
             buildTree();
         });
