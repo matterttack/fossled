@@ -6,7 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var sslRedirect = require('heroku-ssl-redirect');
 
-require('dotenv').config(); // Load environment variables from .env into ENV (process.env).
+require('dotenv').config({silent:true}); // Load environment variables from .env into ENV (process.env).
 
 var routes = require('./routes/index');
 
