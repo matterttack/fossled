@@ -180,6 +180,7 @@ router.get('/api/v1/trees', function(req, res) {
 
     // Get a Postgres client from the connection pool
     pg.connect(connectionString, function(err, client, done) {
+      console.log('connected to pg')
         // Handle connection errors
         if(err) {
           console.log('connection error encountered');
