@@ -5,7 +5,7 @@ var pg = require('pg');
 var _ = require("underscore");
 var connectionString = process.env.DATABASE_URL || 'postgres://localhost/fossled_development';
 
-constant { Client } = require('pg');
+const { Client } = require('pg');
 
 const testFolder = './public/img/product_images';
 const fs = require('fs');
