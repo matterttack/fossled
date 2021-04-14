@@ -3,7 +3,7 @@ var express = require('express');
 var router = express.Router();
 var pg = require('pg');
 var _ = require("underscore");
-var connectionString = process.env.DATABASE_URL || 'postgres://localhost/fossled_development';
+var connectionString = process.env.DATABASE_URL + "?sslmode=require" || 'postgres://localhost/fossled_development';
 
 const testFolder = './public/img/product_images';
 const fs = require('fs');
