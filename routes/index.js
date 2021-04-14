@@ -3,7 +3,7 @@ var express = require('express');
 var router = express.Router();
 var pg = require('pg');
 var _ = require("underscore");
-var connectionString = process.env.DATABASE_URL + "?sslmode=require" || 'postgres://localhost/fossled_development';
+var connectionString = process.env.DATABASE_URL || 'postgres://localhost/fossled_development';
 
 const testFolder = './public/img/product_images';
 const fs = require('fs');
@@ -28,6 +28,26 @@ function filterImages(query) {
     }
   })
 }
+
+/*test get */
+router.get('/api/v1/testingssl', function(req, res) {
+  pg.connectionString = connectionString;
+  pg.ssl = {
+     rejectUnauthorized: false
+  };
+  
+  pg.connect();
+  
+  pg.query("SELECT * FROM product_collections ORDER BY id ASC;", (err, res) => {
+    if(err) {
+      done();
+      console.log(err);
+      return res.status(500).json({ success: false, data: err});
+    };
+    
+    console.log(res);
+  });
+});
 
 /* GET Product Collections index */
 router.get('/api/v1/product_collections', function(req, res) {
