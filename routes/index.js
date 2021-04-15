@@ -37,7 +37,7 @@ router.get('/api/v1/testingssl', function(req, res) {
     connectionString: process.env.DATABASE_URL,
     ssl: {
       rejectUnauthorized: false
-    };
+    }
   });
   
   client.query("SELECT * FROM product_collections ORDER BY id ASC;", (err, res) => {
