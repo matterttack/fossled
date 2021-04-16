@@ -33,18 +33,24 @@ function filterImages(query) {
 
 /*test get */
 router.get('/api/v1/testingssl', function(req, res) {
-  const client = new Client({
+  console.log('in the test);
+              
+    const client = new Client({
     connectionString: process.env.DATABASE_URL,
     ssl: {
       rejectUnauthorized: false
     }
   });
+
+  console.log(client);
   
-  client.query("SELECT * FROM product_collections ORDER BY id ASC;", (err, res) => {
-    if (err) throw err;  
+  client.connect();
+
+  client.query('SELECT * FROM product_collections ORDER BY id ASC;', (err, res) => {
+    if (err) throw err;
     for (let row of res.rows) {
-      console.log(row)
-    };
+      console.log(JSON.stringify(row));
+    }
     client.end();
   });
 
