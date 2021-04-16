@@ -33,7 +33,7 @@ function filterImages(query) {
 
 /*test get */
 router.get('/api/v1/testingssl', function(req, res) {
-  console.log('in the test);
+  console.log('in the test');
               
     const client = new Client({
     connectionString: process.env.DATABASE_URL,
