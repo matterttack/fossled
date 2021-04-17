@@ -34,6 +34,7 @@ function filterImages(query) {
 /*test get */
 router.get('/api/v1/testingssl', function(req, res) {
   console.log('in the test');
+  var results = [];
               
     const client = new Client({
     connectionString: process.env.DATABASE_URL,
@@ -49,9 +50,11 @@ router.get('/api/v1/testingssl', function(req, res) {
   client.query('SELECT * FROM product_collections ORDER BY id ASC;', (err, res) => {
     if (err) throw err;
     for (let row of res.rows) {
+      results.push(row);
       console.log(JSON.stringify(row));
     }
     client.end();
+    return res.json(results);
   });
 
 });
