@@ -94,8 +94,9 @@ router.get('/api/v1/product_collections', function(req, res) {
 
         // After all data is returned, close connection and return results
         query.on('end', function() {
+          console.log('client disconnecting');
             done();
-            return res.json(results);
+            return res.status(200).json(results);
         });
 
     });
