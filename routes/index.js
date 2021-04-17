@@ -54,7 +54,8 @@ router.get('/api/v1/testingssl', function(req, res) {
       console.log(JSON.stringify(row));
     }
     client.end();
-    return res.json(results);
+    console.log('client ended, returning results')
+    return results;
   });
 
 });
