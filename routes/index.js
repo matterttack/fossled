@@ -47,17 +47,17 @@ router.get('/api/v1/testingssl', function(req, res) {
   
   client.connect();
 
-  client.query('SELECT * FROM product_collections ORDER BY id ASC;', (err, res) => {
+  client.query('SELECT * FROM product_collections ORDER BY id ASC;', (err, result) => {
     if (err) throw err;
-    for (let row of res.rows) {
+    for (let row of result.rows) {
       results.push(row);
       console.log(JSON.stringify(row));
     }
     client.end();
     console.log('client ended, returning results')
-    return results;
   });
 
+  return res.json(results);
 });
 
 /* GET Product Collections index */
