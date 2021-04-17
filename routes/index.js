@@ -67,8 +67,8 @@ router.get('/api/v1/testingssl', function(req, res) {
 });
 
 
-/* GET Product Collections 2 index */
-router.get('/api/v1/product_collections2', function(req, res) {
+/* GET Product Collections index */
+router.get('/api/v1/product_collections', function(req, res) {
 
   var results = [];
               
@@ -109,8 +109,8 @@ router.get('/api/v1/product_collections2', function(req, res) {
 
 });
 
-/* GET Product Collections index */
-router.get('/api/v1/product_collections', function(req, res) {
+/* GET Product Collections index OLD*/
+/* router.get('/api/v1/product_collections', function(req, res) {
   
   
   
@@ -147,6 +147,7 @@ router.get('/api/v1/product_collections', function(req, res) {
     });
 
 });
+*/
 
 /* GET Product Collection by ID */
 router.get('/api/v1/product_collections/:product_collection_id', function(req, res) {
