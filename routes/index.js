@@ -339,6 +339,87 @@ router.get('/api/v1/trees', function(req, res) {
 
 });
 
+
+/* GET new trees */
+router.get('/api/v1/newtrees', function(req, res) {
+  
+  var results = [];
+              
+    const client = new Client({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+      rejectUnauthorized: false
+    }
+  });
+
+  console.log(client);
+  
+  client.connect();
+
+  client.query('SELECT * FROM product_collections ORDER BY id ASC;', (err, result) => {
+    if (err) throw err;
+    for (let row of result.rows) {
+      results.push(row);
+      console.log(JSON.stringify(row));
+    }
+    
+    client.end(err => {
+      console.log('client has disconnected')
+      if (err) {
+        console.log('error during disconnection', err.stack)
+        return res.status(500).json({ success: false, data: err});
+      }
+      buildTree(results);
+    });
+  });
+
+    var buildTree = function() {
+      // Pluck the environments
+      var envs = _.uniq(_.pluck(results, 'environment'));
+      var a = [];
+
+      // Iterate over environments, pluck the categories, and build the first branch
+      envs.forEach(function(environment) {
+        var ca = [];
+        var categories = _.uniq(_.pluck(_.where(results, {environment: environment}), 'category'));
+        a.push({name: environment, style: 'Environment', subtree: categories});
+      })
+
+      var ha = [];
+
+      a.forEach(function(env) {
+        var h = env;
+        var ca = [];
+
+        env.subtree.forEach(function(cat) {
+          var sub_cats = _.uniq(_.pluck(_.where(results, {environment: env.name, category: cat}), 'sub_category'));
+
+          // Sort them alphabetically
+          // sub_cats.sort(function(a, b){
+          //     if(a < b) return -1;
+          //     if(a > b) return 1;
+          //     return 0;
+          // })
+
+          var sa = [];
+          sub_cats.forEach(function(sub_cat) {
+            var series = _.uniq(_.pluck(_.where(results, {environment: env.name, category: cat, sub_category: sub_cat}), 'series'));
+            sa.push({name: sub_cat, style: 'sub_category', series: series});
+          });
+          ca.push({name: cat, style: 'category', subtree: sa});
+        });
+        h.subtree = ca;
+        ha.push(h);
+      });
+
+      return res.json(ha);
+    }
+
+});
+
+
+
+
 /* POST TO WARRANTY DATABASE ENDPOINT */
 router.post('/api/v1/warranty_application', function(req, res) {
 
