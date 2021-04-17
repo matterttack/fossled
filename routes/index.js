@@ -53,14 +53,15 @@ router.get('/api/v1/testingssl', function(req, res) {
       results.push(row);
       console.log(JSON.stringify(row));
     }
+    
     client.end(err => {
       console.log('client has disconnected')
       if (err) {
         console.log('error during disconnection', err.stack)
         return res.status(500).json({ success: false, data: err});
       }
-      return res.status(200).json({ success: true, data: results});
-    })
+      return res.status(200).json(results);
+    });
   });
   
 });
