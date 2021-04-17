@@ -66,11 +66,56 @@ router.get('/api/v1/testingssl', function(req, res) {
   
 });
 
+
+/* GET Product Collections 2 index */
+router.get('/api/v1/product_collections2', function(req, res) {
+
+  var results = [];
+              
+    const client = new Client({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+      rejectUnauthorized: false
+    }
+  });
+  
+  client.connect(err => {
+    if (err) {
+      return res.status(500).json({ success: false, data: err});
+    } else {
+      console.log('connected')
+    }
+  })
+  
+  client.query("SELECT * FROM product_collections ORDER BY id ASC;", (err, result) => {
+    if (err) throw err;
+    for (let row of result.rows) {
+      // Search through the images array and add any extra images found in the product_images folder which match the products nominal code
+      product_images = []
+      product_images = filterImages(row.nominal_code);
+      row['product_images'] = product_images
+      results.push(row);
+    }
+    
+    client.end(err => {
+      console.log('client has disconnected')
+      if (err) {
+        console.log('error during disconnection', err.stack)
+        return res.status(500).json({ success: false, data: err});
+      }
+      return res.status(200).json(results);
+    });
+  });
+
+});
+
 /* GET Product Collections index */
 router.get('/api/v1/product_collections', function(req, res) {
-
+  
+  
+  
     var results = [];
-
+  
     // Get a Postgres client from the connection pool
     pg.connect(connectionString, function(err, client, done) {
         // Handle connection errors
@@ -96,7 +141,7 @@ router.get('/api/v1/product_collections', function(req, res) {
         query.on('end', function() {
           console.log('client disconnecting');
             done();
-            return res.status(200).json(results);
+            return res.json(results);
         });
 
     });
