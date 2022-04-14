@@ -83,7 +83,7 @@ router.get('/api/v1/product_collections', function(req, res) {
     if (err) {
       return res.status(500).json({ success: false, data: err});
     } else {
-      console.log('connected')
+      /* console.log('connected') */
     }
   })
   
@@ -98,7 +98,6 @@ router.get('/api/v1/product_collections', function(req, res) {
     }
     
     client.end(err => {
-      console.log('client has disconnected')
       if (err) {
         console.log('error during disconnection', err.stack)
         return res.status(500).json({ success: false, data: err});
@@ -149,9 +148,50 @@ router.get('/api/v1/product_collections', function(req, res) {
 });
 */
 
+
+
 /* GET Product Collection by ID */
 router.get('/api/v1/product_collections/:product_collection_id', function(req, res) {
 
+  var results = [];
+  
+  // Grab data from the URL parameters
+  var id = req.params.product_collection_id;
+
+  const client = new Client({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+      rejectUnauthorized: false
+    }
+  });
+
+  
+  client.connect();
+
+  client.query("SELECT * FROM product_collections WHERE id=($1)", [id], (err, result) => {
+    if (err) throw err;
+    for (let row of result.rows) {
+      product_images = []
+      product_images = filterImages(row.nominal_code);
+      row['product_images'] = product_images
+      results.push(row);
+    }
+    
+    client.end(err => {
+      if (err) {
+        console.log('error during disconnection', err.stack)
+        return res.status(500).json({ success: false, data: err});
+      }
+      return res.status(200).json(results);
+    });
+  });
+});
+
+
+/* GET Product Collection by ID OLD */
+/*
+router.get('/api/v1/product_collections/:product_collection_id', function(req, res) {
+  
     var results = [];
 
     // Grab data from the URL parameters
@@ -186,8 +226,48 @@ router.get('/api/v1/product_collections/:product_collection_id', function(req, r
     });
 
 });
+*/
 
 /* GET Product Light Sources index */
+router.get('/api/v1/product_light_source', function(req, res) {
+
+  var results = [];
+              
+    const client = new Client({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+      rejectUnauthorized: false
+    }
+  });
+  
+  client.connect(err => {
+    if (err) {
+      return res.status(500).json({ success: false, data: err});
+    } else {
+      /* console.log('connected') */
+    }
+  })
+  
+  client.query("SELECT * FROM product_light_sources ORDER BY id ASC;", (err, result) => {
+    if (err) throw err;
+    for (let row of result.rows) {
+      results.push(row);
+    }
+    
+    client.end(err => {
+      if (err) {
+        console.log('error during disconnection', err.stack)
+        return res.status(500).json({ success: false, data: err});
+      }
+      return res.status(200).json(results);
+    });
+  });
+});
+
+
+
+/* GET Product Light Sources index OLD*/
+/*
 router.get('/api/v1/product_light_source', function(req, res) {
 
     var results = [];
@@ -218,8 +298,48 @@ router.get('/api/v1/product_light_source', function(req, res) {
     });
 
 });
+*/
+
 
 /* GET Product Light Sources by Nominal Code */
+router.get('/api/v1/product_light_source/:nominal_code', function(req,res) {
+
+  var results = [];
+
+  // Grab data from the URL parameters
+  var nominal_code = req.params.nominal_code;
+
+  
+  const client = new Client({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+      rejectUnauthorized: false
+    }
+  });
+
+  
+  client.connect();
+
+  client.query("SELECT * FROM product_light_sources WHERE nominal_code=($1)", [nominal_code], (err, result) => {
+    if (err) throw err;
+    for (let row of result.rows) {
+      results.push(row);
+    }
+    
+    client.end(err => {
+      if (err) {
+        console.log('error during disconnection', err.stack)
+        return res.status(500).json({ success: false, data: err});
+      }
+      return res.status(200).json(results);
+    });
+  });
+});
+
+
+
+/* GET Product Light Sources by Nominal Code */
+/*
 router.get('/api/v1/product_light_source/:nominal_code', function(req,res) {
 
   var results = [];
@@ -253,8 +373,11 @@ router.get('/api/v1/product_light_source/:nominal_code', function(req,res) {
   });
 
 });
+*/
 
-/* GET trees */
+
+/* GET trees OLD*/
+/*
 router.get('/api/v1/trees', function(req, res) {
   
   console.log('api route called');
@@ -338,10 +461,10 @@ router.get('/api/v1/trees', function(req, res) {
     }
 
 });
+*/
 
-
-/* GET new trees */
-router.get('/api/v1/newtrees', function(req, res) {
+/* GET trees */
+router.get('/api/v1/trees', function(req, res) {
   
   var results = [];
               
@@ -351,8 +474,6 @@ router.get('/api/v1/newtrees', function(req, res) {
       rejectUnauthorized: false
     }
   });
-
-  console.log(client);
   
   client.connect();
 
@@ -360,7 +481,6 @@ router.get('/api/v1/newtrees', function(req, res) {
     if (err) throw err;
     for (let row of result.rows) {
       results.push(row);
-      console.log(JSON.stringify(row));
     }
     
     client.end(err => {
